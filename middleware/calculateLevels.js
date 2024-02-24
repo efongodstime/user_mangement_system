@@ -1,39 +1,43 @@
+const Worker = require("../models/worker");
 
-const calculateLevels = async (req, res, next) => {
-    try {
-      const { gebrachtVonLvl1 } = req.body;
-  
-      if (!gebrachtVonLvl1) {
-        // If 'Gebracht von (Lvl1)' is not provided, set 'Lvl 2' and 'Lvl 3' to null
-        req.body.lvl2 = null;
-        req.body.lvl3 = null;
-        return next();
-      }
-  
-      // Find the worker referenced by 'Gebracht von (Lvl1)'
-      const parentWorker = await Worker.findById(gebrachtVonLvl1);
-  
-      if (!parentWorker) {
-        return res.status(400).json({ message: 'Invalid reference for Gebracht von (Lvl1)' });
-      }
-  
-      // Set 'Lvl 2' to the 'Gebracht von (Lvl1)' of the parent worker
-      req.body.lvl2 = parentWorker.gebrachtVonLvl1;
-  
-      if (parentWorker.gebrachtVonLvl1) {
-        // If the parent worker has a 'Gebracht von (Lvl1)', set 'Lvl 3' to it
-        req.body.lvl3 = parentWorker.gebrachtVonLvl1;
-      } else {
-        // If the parent worker does not have a 'Gebracht von (Lvl1)', set 'Lvl 3' to null
-        req.body.lvl3 = null;
-      }
-  
-      next();
-    } catch (error) {
-      console.error('Error calculating levels:', error);
-      res.status(500).json({ message: 'Internal server error' });
+const calculateLevelsMiddleware = async function(req,res,next) {
+  try {
+    // If there's no Level 1 connection, set Lvl 2 and Lvl 3 as null
+    if (!this.gebrachtVonLvl1) {
+      this.lvl2 = null;
+      this.lvl3 = null;
+      return next();
     }
-  };
-  
-  module.exports = calculateLevels;
-  
+
+    // Find the Level 1 worker in the database
+    const level1Worker = await Worker.findById(this.gebrachtVonLvl1);
+
+    // If Level 1 worker not found, return null for Lvl 2 and Lvl 3
+    if (!level1Worker) {
+      this.lvl2 = null;
+      this.lvl3 = null;
+      return next();
+    }
+
+    // Set Lvl 2 as the Level 1 worker
+    this.lvl2 = level1Worker._id;
+
+    // Check if Level 1 worker has a supervisor
+    if (level1Worker.supervisor) {
+      // Find the supervisor in the database
+      const supervisor = await Worker.findById(level1Worker.supervisor);
+
+      // If supervisor found, set it as Lvl 3
+      if (supervisor) {
+        this.lvl3 = supervisor._id;
+      }
+    }
+
+    next();
+  } catch (error) {
+    console.error('Error calculating levels:', error);
+    next(error);
+  }
+};
+
+module.exports = calculateLevelsMiddleware;

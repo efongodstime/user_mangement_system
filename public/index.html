@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <link rel="stylesheet" href="res/css/index.css">
+     <script src="res/javascript/tab_section.js" defer></script>
+    <script src="res/javascript/functions.js" defer></script>
+    <script src="res/javascript/ajax.js"></script>
+    <script src="res/javascript/fetchFunctions.js" defer></script>
+</head> 
+<body>
+    <main>
+        <div class="loader_parent" >
+            <div class="dark-bg"></div>
+            <div class="loader" id="loader"></div>
+            <div class="modal-message" id="modal-message">
+                <h2>Message</h2>
+                <p class="message-text"></p>
+                <button class="message-btn">Ok</button>
+            </div>
+        </div>
+       
+        <div class="row-1">
+        <h1>Admin System</h1>
+        <div class="tabs-section">
+            <button class="tab_section-button createbtn">C(create)</button>
+            <button class="tab_section-button readbtn">R(read)</button>
+            <button class="tab_section-button updatebtn">U(update)</button>
+            <button class="tab_section-button deletebtn">D(delete)</button>
+        
+        </div>
+        </div>
+        <div class="tabs-window-section">
+            <div class="create tabs-window hide" id="create-tab">
+                <form class="crud-form" id="create-form">
+                    <label for="firstname" class="label">FirstName:</label>
+                    <input type="text" placeholder="FirstName" class="inp" name="firstname" id="firstname" required>
+                    <label for="lastname" class="label" >LastName:</label>
+                    <input type="text" id="lastname" placeholder="LastName" name="lastname" class="inp" required>
+                    <label for="email" class="label">Email:</label>
+                    <input type="email" id="email" placeholder="Email Address" class="inp" name="email" required>
+                    <label for="id" class="label">Referral Id:</label>
+                    <input type="number" name="id" id="id" class="inp" placeholder="Referral Id" required>
+                    <button type="submit" class="submit">Create</button>
+                </form>
+            </div>
+            <!-- Read form -->
+             <div class="read tabs-window hide" id="read-tab">
+<form id="read-form">
+    <label for="id" class="label">User Id:</label>
+    <input type="number" class="inp" placeholder="User Id" id="readid" name="user-id" required>
+    <button type="submit" class="submit">Read</button>
+</form>
+<div class="read-view">
+    <h1>User Details</h1>
+    <p class="user-id">n</p>
+    <p class="name">m</p>
+    <p class="email">m</p>
+    <p class="brought-by">i</p>
+</div>
+             </div>
+
+
+             <!-- Update -->
+            <div class="update tabs-window hide" id="update-tab">
+                <form id="update-form">
+                    <label for="id" class="label">User Id:</label>
+                    <input type="number" class="inp" placeholder="User Id" id="updateid" name="user-id" required>
+                    <label for="fname" class="label">FirstName:</label>
+                    <input type="text" name="firstname" id="fname" class="inp" placeholder="FirstName" required>
+                    <label for="lastname" class="label">Lastname:</label>
+                    <input type="text" id="lastname" class="inp" placeholder="Lastname" required>
+                    <label for="email" class="label">Email:</label>
+                    <input type="email" name="email" id="email" class="inp" placeholder="Email Address" required>
+                    <button type="submit" class="submit">Update</button>
+                </form>
+            </div>
+
+
+            <!-- delete -->
+            <div class="delete tabs-window hide" id="delete-tab">
+                <form id="delete-form">
+                    <label for="id" class="label">User Id:</label>
+                    <input type="number" class="inp" placeholder="User Id" id="deletid" name="user-id" required>
+                    <button type="submit" class="submit">Delete</button>
+                </form>
+            </div> 
+        </div>
+    </main>
+</body>
+</html>

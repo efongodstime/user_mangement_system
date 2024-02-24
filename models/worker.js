@@ -2,8 +2,9 @@
 const mongoose = require('../node_modules/mongoose');
 
 const workerSchema = new mongoose.Schema({
-    vorname: { type: String, required: true },
-    nachname: { type: String, required: true },
+  ID: { type: String, required: true }, 
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true, validate: { validator: value => /^\S+@\S+\.\S+$/.test(value), message: 'Invalid email address' } },
   gebrachtVonLvl1: { type: mongoose.Schema.Types.ObjectId, ref: 'Worker' },
   supervisor: { type: mongoose.Schema.Types.ObjectId, ref: 'Worker' },

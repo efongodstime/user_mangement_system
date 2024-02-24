@@ -1,70 +1,52 @@
+const express = require("express");
+const path = require("path");
+let PORT = 12000;
+let mongoose = require("mongoose");
+let bodyParser = require("body-parser");
+let workerRoutes = require("./routes/workerRoutes");
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+let app = express();
 
-const calculateLevels = require('./middleware/calculateLevels');
+// middleware
+app.use(express.static(path.join(__dirname, "public")));
 
-const Worker = require('./models/worker');
-
-const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/user_management');
+// Routes
+app.use('/users', workerRoutes); // Mount the user routes
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-console.log("connected")
+// Connect to MongoDB and automatically add NEW SUPER WORKER into the database
+mongoose.connect('mongodb://localhost:27017/workersDb', {
+ 
+})
+.then(async () => {
+    console.log('Connected to MongoDB');
 
+    // Check if the "master" user exists, if not, insert it
+    const User = require('./models/worker');
+    const masterUser = {
+        ID: '1', // Setting ID as a string
+        firstName: "Master",
+        lastName: "User",
+        email: "masteruser@example.com",
+        gebrachtVonLvl1: null,
+        supervisor: null,
+        lvl2: null,
+        lvl3: null,
+        superprovBerechtigt: false,
+        strasse: "123 Aku road",
+        ort: "ENUUG",
+        iban: "2002"
+    };
 
-
-// Add a new worker entry
-app.post('/workers', calculateLevels, async (req, res) => {
-    try {
-        const newWorker = new Worker(req.body);
-        await newWorker.save();
-        res.status(201).json({ message: 'Worker added successfully', worker: newWorker });
-      } catch (error) {
-        console.error('Error adding worker:', error);
-        res.status(500).json({ message: 'Internal server error' });
-      }
+    let user = await User.findOneAndUpdate({ ID: '1' }, masterUser, { upsert: true, new: true });
+    console.log('Master user Added,master user id is 1, make sure u use 1 at first start.');
+})
+.catch((error) => {
+    console.error('MongoDB connection error:', error);
 });
 
-// Edit an existing worker entry by ID
-app.put('/workers/:id', calculateLevels, async (req, res) => {
-
-    const workerId = req.params.id;
-  
-    try {
-      let worker = await Worker.findById(workerId);
-  
-      if (!worker) {
-        return res.status(404).json({ message: 'Worker not found' });
-      }
-  
-      worker.set(req.body);
-      worker = await worker.save();
-  
-      res.json({ message: 'Worker updated successfully', worker });
-    } catch (error) {
-      console.error('Error updating worker:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
- });
-
-//  error handling middleware
-
- app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Internal server error' });
-  });
-
-
-  
-  // Start the server
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-  });
-  
+});
